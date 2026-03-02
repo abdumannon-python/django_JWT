@@ -1,15 +1,12 @@
-from http.client import responses
-
-from rest_framework.decorators import permission_classes
-from rest_framework.permissions import AllowAny
-
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .models import User
-from .serializers import UserSerializers,RegisterSerializers
+from .serializers import *
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authentication import authenticate
+from rest_framework.generics import RetrieveUpdateAPIView
 
 class RegisterView(APIView):
     def post(self,request):
@@ -45,7 +42,7 @@ class Login(APIView):
 
 
 class Logout(APIView):
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated]
     def post(self,request):
         try:
             refresh_token=self.request.data.get('refresh_token')
@@ -55,26 +52,12 @@ class Logout(APIView):
         except Exception:
             return Response({'error':'Token xato'},status=status.HTTP_400_BAD_REQUEST)
 
+class Profilupdate(RetrieveUpdateAPIView):
+    serializer_class = ProfilSerializers
+    permission_classes = [IsAuthenticated]
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    def get_object(self):
+        return self.request.user
 
 
 
