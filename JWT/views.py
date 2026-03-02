@@ -59,5 +59,22 @@ class Profilupdate(RetrieveUpdateAPIView):
     def get_object(self):
         return self.request.user
 
+class ChangePassword(APIView):
+    permission_classes = (IsAuthenticated, )
+    def post(self,request):
+        serializer=ChangePasswordSerailizers(data=request.data)
+        serializer.is_valid(raise_exception=True)
+
+        response={
+            'status':status.HTTP_200_OK,
+            'message':'parol almashti'
+        }
+        return Response(response)
+
+
+
+
+
+
 
 

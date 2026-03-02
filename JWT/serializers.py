@@ -1,4 +1,3 @@
-from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from rest_framework import serializers
 from .models import User
 from rest_framework.exceptions import ValidationError
@@ -69,5 +68,26 @@ class ProfilSerializers(serializers.ModelSerializer):
         instance.save()
         return instance
 
+class ChangePasswordSerailizers(serializers.Serializer):
+    old_password = serializers.CharField(write_only=True, required=True)
+    new_password = serializers.CharField(write_only=True, required=True)
+    conf_password = serializers.CharField(write_only=True, required=True)
+    def validate(self,data):
+        old_password=data.get('old_password')
+        new_password=data.get('new_password')
+        conf_password=data.get('conf_password')
 
+        if old_password==new_password:
+            raise ValidationError({'message':'Yangi parollar eskisiga teng bolmasligi kerak'})
+        if new_password!=conf_password:
+            raise ValidationError({'message':'parollar mos emas'})
+        return data
+    def update(self, instance, validated_data):
+        user=instance.check_password(validated_data.get('old_password'))
+        print(user)
+        if not user:
+            raise ValidationError({'message':'parolni xato terdiz'})
+        user.set_password(validated_data.get('new_password'))
+        user.save()
+        return user
 
