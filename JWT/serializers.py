@@ -38,9 +38,13 @@ class ProfilSerializers(serializers.ModelSerializer):
         fields=('username',  'email', 'first_name', 'last_name')
 
     def validate_username(self,username):
-        if User.objects.filter(username=username).exists():
+        user_query = User.objects.filter(username=username)
+
+        if self.instance:
+            user_query = user_query.exclude(pk=self.instance.pk)
+        if user_query.exists():
             raise ValidationError({'message':'Bu username band'})
-        elif len(username)<6:
+        if len(username)<6:
             raise ValidationError({'message':'Username kamida 7 belgidan iborat bolishi kerek'})
         elif not username.isalnum():
             raise ValidationError({'message':'username da ortiqcha belgi bolmasligi kerak '})
@@ -49,9 +53,14 @@ class ProfilSerializers(serializers.ModelSerializer):
         return username
 
     def validate_email(self,email):
-        if User.objects.filter(email=email).exists():
-            raise ValidationError({'message':'Bu email dan band'})
+        user_query = User.objects.filter(email=email)
 
+        if self.instance:
+            user_query = user_query.exclude(pk=self.instance.pk)
+
+        if user_query.exists():
+            raise ValidationError({'message': 'Bu email band'})
+        return email
     def update(self, instance, validated_data):
         instance.username=validated_data.get('username',instance.username)
         instance.email=validated_data.get('email',instance.email)
