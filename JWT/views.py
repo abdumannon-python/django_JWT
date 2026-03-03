@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authentication import authenticate
 from rest_framework.generics import RetrieveUpdateAPIView
+import time
 
 class RegisterView(APIView):
     def post(self,request):
@@ -62,6 +63,7 @@ class Profilupdate(RetrieveUpdateAPIView):
 class ChangePassword(APIView):
     permission_classes = (IsAuthenticated, )
     def post(self,request):
+        start_time=time.time()
         serializer=ChangePasswordSerailizers(data=request.data,instance=request.user,)
         serializer.is_valid(raise_exception=True)
         serializer.save(instance=request.user)
@@ -70,6 +72,8 @@ class ChangePassword(APIView):
             'status':status.HTTP_200_OK,
             'message':'parol almashti'
         }
+        end_time = time.time()
+        print(f"Ketgan vaqt: {end_time - start_time} sekund================")
         return Response(response)
 
 
