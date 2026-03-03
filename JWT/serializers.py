@@ -78,7 +78,7 @@ class ChangePasswordSerailizers(serializers.Serializer):
         old_password=data.get('old_password')
         new_password=data.get('new_password')
         conf_password=data.get('conf_password')
-        user = self.context.get('request').user
+        user = self.instance
 
         if not user.check_password(old_password):
             raise ValidationError({'message': 'Eski parolni xato kiritdingiz'})

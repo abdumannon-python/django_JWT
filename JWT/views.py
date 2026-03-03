@@ -62,7 +62,7 @@ class Profilupdate(RetrieveUpdateAPIView):
 class ChangePassword(APIView):
     permission_classes = (IsAuthenticated, )
     def post(self,request):
-        serializer=ChangePasswordSerailizers(data=request.data,instance=request.user,context={'request': request})
+        serializer=ChangePasswordSerailizers(data=request.data,instance=request.user,)
         serializer.is_valid(raise_exception=True)
         serializer.save(instance=request.user)
 
