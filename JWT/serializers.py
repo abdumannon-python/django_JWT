@@ -72,22 +72,28 @@ class ChangePasswordSerailizers(serializers.Serializer):
     old_password = serializers.CharField(write_only=True, required=True)
     new_password = serializers.CharField(write_only=True, required=True)
     conf_password = serializers.CharField(write_only=True, required=True)
+
+
     def validate(self,data):
         old_password=data.get('old_password')
         new_password=data.get('new_password')
         conf_password=data.get('conf_password')
+        user = self.context.get('request').user
 
+        if not user.check_password(old_password):
+            raise ValidationError({'message': 'Eski parolni xato kiritdingiz'})
+        print(user.check_password('old_password'))
         if old_password==new_password:
             raise ValidationError({'message':'Yangi parollar eskisiga teng bolmasligi kerak'})
         if new_password!=conf_password:
             raise ValidationError({'message':'parollar mos emas'})
+        if len(new_password)<7:
+            raise ValidationError({'message':'parol kamida 7 belgidan iborat bolishi kerek'})
         return data
+
+
     def update(self, instance, validated_data):
-        user=instance.check_password(validated_data.get('old_password'))
-        print(user)
-        if not user:
-            raise ValidationError({'message':'parolni xato terdiz'})
-        user.set_password(validated_data.get('new_password'))
-        user.save()
-        return user
+        instance.set_password(validated_data.get('new_password'))
+        instance.save()
+        return instance
 
