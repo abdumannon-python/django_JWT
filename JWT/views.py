@@ -7,6 +7,7 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.authentication import authenticate
 from rest_framework.generics import RetrieveUpdateAPIView
+from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
 import time
 
 class RegisterView(APIView):
@@ -76,6 +77,39 @@ class ChangePassword(APIView):
         print(f"Ketgan vaqt: {end_time - start_time} sekund================")
         return Response(response)
 
+
+
+
+class LoginRefreshView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(self, request):
+        refresh_token = request.data.get('refresh_token')
+
+        if not refresh_token:
+            return Response(
+                {"error": "Refresh token taqdim etilmadi"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        try:
+
+            refresh = RefreshToken(refresh_token)
+
+            data = {
+                'status': status.HTTP_200_OK,
+                'message': 'Token muvaffaqiyatli yangilandi',
+                'access': str(refresh.access_token),
+
+
+            }
+            return Response(data, status=status.HTTP_200_OK)
+
+        except (TokenError, InvalidToken):
+            return Response(
+                {"error": "Refresh token yaroqsiz yoki muddati o'tgan"},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
 
 
 

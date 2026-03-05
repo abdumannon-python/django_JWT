@@ -12,5 +12,6 @@ urlpatterns = [
     path('login/',Login.as_view()),
     path('logout/',Logout.as_view()),
     path('profilupdate/',Profilupdate.as_view(),name='profil'),
-    path('passwordupdate/',ChangePassword.as_view())
+    path('passwordupdate/',ChangePassword.as_view()),
+    path('auth/refresh/', LoginRefreshView.as_view(), name='token_refresh_custom'),
 ]
